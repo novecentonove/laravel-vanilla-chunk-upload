@@ -14,25 +14,29 @@ const status = ref('Upload non iniziato')
 const fileInput=  ref(null)
 
 const upload = async () => {
-      const file = fileInput.value.files[0];
-      const chunkSize = 1 * 1024 * 1024; // 1MB
-      const totalChunks = Math.ceil(file.size / chunkSize);
+      const file = fileInput.value.files[0]
+      const chunkSize = 1 * 1024 * 1024 // 1MB
+      const totalChunks = Math.ceil(file.size / chunkSize)
       const uuid = uuidv4()
 
       for (let i = 0; i < totalChunks; i++) {
         const start = i * chunkSize;
         const end = start + chunkSize;
         const chunk = file.slice(start, end);
+        const percent = (i + 1) / totalChunks * 100;
 
         const formData = new FormData();
+        formData.append('uuid', uuid);
         formData.append('file', chunk);
+        formData.append('file_name', file.name);
         formData.append('chunk_index', i);
         formData.append('chunks_total', totalChunks);
-        formData.append('uuid', uuid);
-
+        formData.append('percent', percent);
+        
         try {
           await axios.post('/upload', formData);
           status.value = `Uploading chunk ${i + 1} of ${totalChunks}`;
+          
         } catch (error) {
           status.value = `Upload failed: ${error.message}`;
         }

@@ -14,7 +14,7 @@ use App\Http\Controllers\UploadController;
 |
 */
 
-Route::get('/upload', function () {
+Route::get('/', function () {
     return view('upload');
 });
 
