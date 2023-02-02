@@ -15,7 +15,7 @@ const fileInput =  ref(null)
 
 const upload = async () => {
     const file = fileInput.value.files[0]
-    const chunkSize = 1.5 * 1024 * 1024 // 1MB
+    const chunkSize = 1.5 * 1024 * 1024 // 1.5MB
     const totalChunks = Math.ceil(file.size / chunkSize)
     const uuid = uuidv4()
 

@@ -92,7 +92,7 @@ const dragleave = () => {
 
 const drop = (e) => {
     e.preventDefault();
-    fileInput.value.files = e.dataTransfer.files;
+    fileInput.value.files = e.dataTransfer.files; //??
     onChange();
     isDragging.value = false;
 }
