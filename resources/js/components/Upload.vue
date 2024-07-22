@@ -1,19 +1,25 @@
 <template>
   <div>
-    <form>
-      <input type="file" ref="fileInput" @change="upload" accept="image/png, image/jpeg">
+    <form class="flex flex-col items-start">
+      <input type="file" ref="fileInput" accept="image/png, image/jpeg">
+      <button @click.prevent="upload">Upload</button>
     </form>
-    <p>{{ status }}</p>
+    <p class="mt-10">{{ status }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref } from "@vue/reactivity";
 
-const status = ref('Upload non iniziato')
+const status = ref('')
 const fileInput =  ref(null)
 
 const upload = async () => {
+
+    if(!fileInput.value.files[0]){
+      return;
+    }
+
     const file = fileInput.value.files[0]
     const chunkSize = 1.5 * 1024 * 1024 // 1.5MB
     const totalChunks = Math.ceil(file.size / chunkSize)
@@ -35,28 +41,28 @@ const upload = async () => {
     }
 
     for (let i = 0; i < totalChunks; i++) {
-    const start = i * chunkSize;
-    const end = start + chunkSize;
-    const chunk = file.slice(start, end);
-    const percent = (i + 1) / totalChunks * 100;
+      const start = i * chunkSize;
+      const end = start + chunkSize;
+      const chunk = file.slice(start, end);
+      const percent = (i + 1) / totalChunks * 100;
 
-    const formData = new FormData();
-    formData.append('uuid', uuid);
-    formData.append('file', chunk);
-    formData.append('file_name', file.name);
-    formData.append('chunk_index', i);
-    formData.append('chunks_total', totalChunks);
-    formData.append('percent', percent);
-    
-    try {
-        await axios.post('/upload', formData);
-        status.value = `Uploading chunk ${i + 1} of ${totalChunks}`;
-        
-    } catch (error) {
-        status.value = `Upload failed: ${error.message}`;
+      const formData = new FormData();
+      formData.append('uuid', uuid);
+      formData.append('file', chunk);
+      formData.append('file_name', file.name);
+      formData.append('chunk_index', i);
+      formData.append('chunks_total', totalChunks);
+      formData.append('percent', percent);
+      
+      try {
+          await axios.post('/upload', formData);
+          status.value = `Uploading chunk ${i + 1} of ${totalChunks}`;
+          
+      } catch (error) {
+          status.value = `Upload failed: ${error.message}`;
+      }
     }
-    }
-    status.value = 'Upload completed';
+    status.value = 'Upload completed. Check storage/app/media folder';
 }
     
 const uuidv4 = () => {
